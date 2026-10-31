@@ -1,7 +1,7 @@
 import type { Config } from "@react-router/dev/config";
 
 export default {
-  // Config options...
-  // Server-side render by default, to enable SPA mode set this to `false`
+  // Tillåter formulär från vår Render-adress bakom plattformens HTTPS-proxy.
+  allowedActionOrigins: ["microservices-webshop-frontend.onrender.com"],
   ssr: true,
 } satisfies Config;
