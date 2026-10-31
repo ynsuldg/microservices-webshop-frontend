@@ -28,8 +28,10 @@ export default function CheckoutReturnPage() {
     <p className="mt-2" role="status">{payment.status === "PAID" ? "Payment confirmed. Thank you for your order."
       : payment.status === "CANCELLED" ? "The payment session has expired. Your cart has been kept."
       : "Payment has not been confirmed yet. If you left Checkout, your cart is kept and stock remains reserved until the session expires."}</p>
-    {!terminal && <button type="button" className="mt-4 rounded-md border px-4 py-2" disabled={revalidator.state !== "idle"}
-      onClick={() => revalidator.revalidate()}>Refresh status</button>}
+    {!terminal && <button type="button"
+      className="mt-4 cursor-pointer rounded-md border border-slate-500 px-4 py-2 transition-colors hover:bg-slate-800 hover:text-slate-100 active:bg-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400 disabled:cursor-wait disabled:opacity-60"
+      disabled={revalidator.state !== "idle"} aria-busy={revalidator.state !== "idle"}
+      onClick={() => revalidator.revalidate()}>{revalidator.state !== "idle" ? "Refreshing…" : "Refresh status"}</button>}
     <Link className="mt-6 block underline" to="/products">Back to products</Link>
   </main>;
 }
