@@ -2,3 +2,10 @@
 build
 node_modules
 README.md
+.git
+.idea
+.env
+.env.*
+npm-debug.log*
+playwright-report
+test-results
