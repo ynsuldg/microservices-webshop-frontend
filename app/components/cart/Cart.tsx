@@ -8,9 +8,12 @@ type CartProps = {
     onDecrease: (productId: number) => void;
     onClose: () => void;
     onCheckout: () => void;
+    checkoutPending?: boolean;
+    checkoutError?: string;
 };
 
-const Cart = ({ items, onIncrease, onDecrease, onClose, onCheckout }: CartProps) => {
+// Visar varukorgen och håller betalningsfel synliga utan att ta bort produkterna.
+const Cart = ({ items, onIncrease, onDecrease, onClose, onCheckout, checkoutPending, checkoutError }: CartProps) => {
     const totalPrice = items.reduce(
         (sum, item) => sum + item.price * item.quantity,
         0
@@ -59,12 +62,14 @@ const Cart = ({ items, onIncrease, onDecrease, onClose, onCheckout }: CartProps)
                     </strong>
                 </p>
                 <div className="w-full">
+                    {checkoutError && <p role="alert" className="mb-3 text-red-600 dark:text-red-300">{checkoutError}</p>}
                     <button
                         type="button"
                         onClick={onCheckout}
+                        disabled={checkoutPending || items.length === 0}
                         className="cursor-pointer w-full px-4 py-3 rounded-md border border-slate-300 text-sm font-medium text-slate-900 transition-colors hover:bg-slate-100 dark:border-slate-500 dark:text-slate-100 dark:hover:bg-slate-800"
                     >
-                        Send order
+                        {checkoutPending ? "Opening payment..." : "Pay with Stripe"}
                     </button>
                 </div>
             </footer>
