@@ -8,6 +8,7 @@ export default [
     layout("routes/protected-layout.tsx", [
         route("welcome", "routes/welcomePage.tsx"),
         route("products", "routes/productsPage.tsx"),
+        route("checkout/return", "routes/checkoutReturnPage.tsx"),
         route("products/:id", "routes/productDetailPage.tsx"),
 
         layout("routes/admin-layout.tsx", [
