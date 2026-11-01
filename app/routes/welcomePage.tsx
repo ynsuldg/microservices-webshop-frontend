@@ -45,7 +45,7 @@ export default function WelcomePage({ loaderData, actionData }: Route.ComponentP
       <section className="w-full max-w-2xl rounded-lg border border-slate-300 p-8 shadow-sm dark:border-slate-700">
         <h1 className="text-3xl font-bold">Welcome, {subject}</h1>
         <p className="mt-4 text-slate-600 dark:text-slate-300">
-          You are logged in to BlackMarqet.
+          You are logged in to Demo Webshop.
         </p>
 
         <div className="mt-8">

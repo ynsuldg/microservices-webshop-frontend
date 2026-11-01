@@ -27,7 +27,7 @@ const Cart = ({ items, onIncrease, onDecrease, onClose, onCheckout, checkoutPend
             <header className="px-6 py-5 flex items-center justify-between border-b border-slate-200 dark:border-[#9c9177]/20">
                 <div>
                     <p className="text-[10px] tracking-[0.25em] text-slate-500 dark:text-slate-400">
-                        BLACKMARQET
+                        Demo Webshop
                     </p>
                     <h2 className="mt-1 text-xl font-medium">
                         The Manifest

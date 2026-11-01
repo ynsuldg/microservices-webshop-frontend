@@ -20,7 +20,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export function meta() {
 	return [
-		{ title: "Login - Blackmarqet" }
+		{ title: "Login - Demo Webshop" }
 	];
 }
 
@@ -78,7 +78,7 @@ export default function LoginPage({ actionData }: Route.ComponentProps) {
 	return (
 		<main className="flex items-center justify-center overflow-hidden">
 			<div className="w-full max-w-sm">
-				<p className="text-center text-xs tracking-[0.25em] text-slate-500 dark:text-slate-400">BLACKMARQET</p>
+				<p className="text-center text-xs tracking-[0.25em] text-slate-500 dark:text-slate-400">Demo Webshop</p>
 				<h1 className="mt-3 text-center text-2xl font-medium">{resetting ? "Reset password" : "State your business"}</h1>
 
 				{searchParams.get("registered") === "1" && (

@@ -7,7 +7,7 @@ type CookieContextValue = {
 
 const CookieContext = createContext<CookieContextValue | null>(null);
 
-const STORAGE_KEY = "blackmarqet-cookie-dismissed";
+const STORAGE_KEY = "demo-webshop-cookie-dismissed";
 
 export function CookieProvider({ children }: { children: ReactNode }) {
     const [visible, setVisible] = useState(false);
