@@ -67,6 +67,10 @@ export default function LoginPage({ actionData }: Route.ComponentProps) {
 					<p role="status" className="mt-6 text-center text-sm text-green-600 dark:text-green-300">Account created. You can now log in.</p>
 				)}
 
+				{searchParams.get("deleted") === "1" && (
+					<p role="status" className="mt-6 text-center text-sm text-green-600 dark:text-green-300">Your account has been deleted.</p>
+				)}
+
 				{error ? (
 					<div className="w-fit mx-auto mt-6 px-4 py-2 rounded-md border-2 border-red-300 bg-red-100 dark:border-red-900 dark:bg-red-300/30">
 						<p className="text-center text-xs font-medium text-red-700 dark:text-red-400">ACCESS DENIED</p>
