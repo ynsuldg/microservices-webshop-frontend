@@ -102,20 +102,24 @@ export default function ProductsPage() {
     sessionStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems, cartLoaded]);
 
-  function addToCart(product: Product) {
+  function addToCart(product: Product): boolean {
+    if (product.stock <= 0) {
+      alert("There are no more products in storage");
+      return false;
+    }
     const index = cartItems.findIndex((item) => item.id === product.id);
 
     if (index === -1) {
       const newItem = { ...product, quantity: 1 };
       setCartItems([...cartItems, newItem]);
-      return;
+      return true;
     }
 
     const currentItem = cartItems[index];
 
     if (currentItem.quantity >= currentItem.stock) {
       alert("There are no more products in storage");
-      return;
+      return false;
     }
 
     const updatedItems = [...cartItems];
@@ -126,7 +130,7 @@ export default function ProductsPage() {
 
     setCartItems(updatedItems);
 
-    alert(`${product.name} has been added to cart.`);
+    return true;
   }
 
   function increaseQuantity(productId: number) {

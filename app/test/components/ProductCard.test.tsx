@@ -37,7 +37,7 @@ describe("ProductCard", () => {
     });
 
     it("anropar onAdd", async () => {
-        const onAdd = vi.fn();
+        const onAdd = vi.fn(() => true);
         const user = userEvent.setup();
 
         const Stub = createRoutesStub([
@@ -52,5 +52,24 @@ describe("ProductCard", () => {
 
         expect(onAdd).toHaveBeenCalledTimes(1);
         expect(onAdd).toHaveBeenCalledWith(product);
+        expect(screen.getByRole("button", { name: /added to cart/i })).toBeInTheDocument();
+    });
+
+    it("återställer knapptexten efter bekräftelsen", async () => {
+        const user = userEvent.setup();
+        const Stub = createRoutesStub([{ path: "/", Component: () => <ProductCard product={product} onAdd={() => true} /> }]);
+        render(<Stub initialEntries={["/"]} />);
+        await user.click(screen.getByRole("button", { name: /add to cart/i }));
+        expect(screen.getByRole("button", { name: /added to cart/i })).toBeInTheDocument();
+        expect(await screen.findByRole("button", { name: /^add to cart$/i }, { timeout: 2500 })).toBeInTheDocument();
+    });
+
+    it("visar ingen lyckad bekräftelse om varan inte kunde läggas till", async () => {
+        const user = userEvent.setup();
+        const Stub = createRoutesStub([{ path: "/", Component: () => <ProductCard product={product} onAdd={() => false} /> }]);
+        render(<Stub initialEntries={["/"]} />);
+        await user.click(screen.getByRole("button", { name: /add to cart/i }));
+        expect(screen.getByRole("button", { name: /^add to cart$/i })).toBeInTheDocument();
+        expect(screen.queryByText(/added to cart/i)).not.toBeInTheDocument();
     });
 });
