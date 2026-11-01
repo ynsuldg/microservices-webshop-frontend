@@ -1,22 +1,82 @@
- ### Ansvar 
-Vår frontend applikation micro-services ansvarar för att användare kan logga in, välja produkter med hjälp av sökning och kategorifilter, lägga till produkter i varukorg och skicka order. Som admin kan man även skapa produkter. 
+# Microservices Webshop Frontend
 
-### Teknik
+## Ansvar
 
-Applikationen är byggd med React och React Router v7 i framework mode, vilket innebär att sidorna renderas på servern och att inloggningen kan hanteras säkert där. Koden är skriven i TypeScript, bygget sköts av Vite och utseendet av Tailwind CSS. Efter inloggning sparas JWT i en signerad httpOnly-cookie på serversidan, så att token inte är åtkomlig för JavaScript i webbläsaren. Varukorgen sparas i webbläsarens sessionStorage.
+Frontend låter användare logga in, söka och filtrera produkter, hantera kundvagnen och starta Stripe Checkout.
+Administratörer kan även skapa produkter. Alla backendanrop går via gatewayn.
 
-### Databas, miljövariabler och port
+Betalningssidan visar backendens orderstatus och låter kunden uppdatera eller avbryta ett betalningsförsök.
+Att lämna Stripe eller ändra kundvagnen avbryter inte en tidigare betalningssession.
+Kundvagnen behålls vid avbrott och töms efter PAID endast om den motsvarar den betalade ordern.
+Pending-länken sparas per webbläsarflik och följer inte med till en annan dator.
+En saknad order kan rensas ur lokala referenser utan att kundvagnen tas bort.
 
-Frontend har ingen egen databas, utan ansluter till mikrotjänsterna som använder neon. Vi använder miljövariabler VITE_GATEWAY_URL=http://localhost:9003/gateway för att koppla oss till vår gateway som i sin tur kopplar oss till mikrotjänsterna, NODE_ENV=development för att tala om för node vilket läge appen körs i. Development för lokalt och production när applikationen är deployed. SESSION_SECRET för att signera __session cookien. Vår frontends port är 5173.
+## Tekniker
 
-### Länkar till övriga repositories
+Node.js 24, React 19, React Router 8 i framework mode med SSR, TypeScript, Vite, Tailwind CSS,
+Vitest, React Testing Library och MSW.
 
-https://github.com/AnwarAsry/gateway-service.git
-https://github.com/MartinGruter/auth-server-projekt2.git
-https://github.com/MartinGruter/product-service-projekt2.git
-https://github.com/MartinGruter/order-service-projekt2.git
-https://github.com/MartinGruter/email-service-projekt2.git
+## Databas och session
 
-### Hur applikationen startas
+Frontend har ingen egen databas. JWT lagras i en signerad HttpOnly-cookie (`__session`), inte i localStorage.
+Kundvagn och betalningsreferens lagras i `sessionStorage`. Kortuppgifter anges på Stripes sida.
 
-Node.js version krävs för att starta applikationen. Sedan kommandon i terminalen, första npm install sedan npm run dev, öppna sedan upp localhost://5173. Frontend behöver att gateway och övriga mikrötjänster körs.
+## Miljövariabler
+
+| Variabel | Lokalt | Render |
+| --- | --- | --- |
+| `VITE_GATEWAY_URL` | `http://localhost:9003/gateway` | `https://microservices-webshop-gateway-service.onrender.com/gateway` |
+| `SESSION_SECRET` | Egen lång slumpmässig sessionshemlighet. | Hemlighet i tjänstens Environment. |
+| `NODE_ENV` | `development` | `production`, redan satt i Docker-imagen. |
+
+Lokala värden kan läggas i `.env.local`, som inte ska committas.
+Frontend behöver inga Stripe-nycklar, databaslösenord eller interna tjänstetokens.
+
+## Starta applikationen lokalt
+
+Kräver Node.js 24 och att gatewayn samt berörda backendtjänster är igång.
+
+```shell
+npm install
+npm run dev
+```
+
+Öppna `http://localhost:5173`. Typkontroll körs med `npm run typecheck` och tester med `npm run test -- --run`.
+
+## Render
+
+| Tjänst | Render-adress |
+| --- | --- |
+| Frontend – öppna webshoppen | [microservices-webshop-frontend.onrender.com](https://microservices-webshop-frontend.onrender.com) |
+| Auth Service | [microservices-webshop-auth-service.onrender.com](https://microservices-webshop-auth-service.onrender.com) |
+| Product Service | [microservices-webshop-product-service.onrender.com](https://microservices-webshop-product-service.onrender.com) |
+| Order Service | [microservices-webshop-order-service.onrender.com](https://microservices-webshop-order-service.onrender.com) |
+| Email Service | [microservices-webshop-email-service.onrender.com](https://microservices-webshop-email-service.onrender.com) |
+| Gateway Service | [microservices-webshop-gateway-service.onrender.com](https://microservices-webshop-gateway-service.onrender.com) |
+| Payment Service | [microservices-webshop-payment-service.onrender.com](https://microservices-webshop-payment-service.onrender.com) |
+- Docker-image: `ynsuldg/microservices-webshop-frontend:1.0.0`.
+
+Använd **Web Service → Existing Image**, sätt miljövariablerna i Render och behåll Docker-imagens startkommando.
+Efter en ny image från senaste `main` väljs **Manual Deploy → Deploy latest reference**.
+En äldre Actions-omkörning kan skriva över samma tagg med äldre kod.
+
+Render Free kan ge väntetid när tjänsterna väcks. Se [Render-dokumentationen](https://render.com/docs/deploying-an-image).
+
+### Gatewayadress vid bygge
+
+`VITE_GATEWAY_URL` byggs in av Vite. Enbart en ändring i Renders Environment uppdaterar inte en färdig image.
+Sätt GitHub Actions **repository variable** `VITE_GATEWAY_URL` till gatewayadressen ovan och bygg imagen från senaste `main`.
+`SESSION_SECRET` sätts däremot vid körning i Render. Containern lyssnar på port 3000.
+
+`allowedActionOrigins` i `react-router.config.ts` tillåter frontendens exakta Render-värd för formulär
+bakom HTTPS-proxyn. Vid byte av frontenddomän behöver även den inställningen och backendens
+`ALLOWED_ORIGINS` samt payment-tjänstens `PAYMENT_RETURN_URL` uppdateras.
+
+## Relaterade repositories
+
+- [Auth Service](https://github.com/ynsuldg/microservices-webshop-auth-service)
+- [Product Service](https://github.com/ynsuldg/microservices-webshop-product-service)
+- [Order Service](https://github.com/ynsuldg/microservices-webshop-order-service)
+- [Email Service](https://github.com/ynsuldg/microservices-webshop-email-service)
+- [Gateway Service](https://github.com/ynsuldg/microservices-webshop-gateway-service)
+- [Payment Service](https://github.com/ynsuldg/microservices-webshop-payment-service)
