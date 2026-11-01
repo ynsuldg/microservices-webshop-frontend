@@ -199,7 +199,7 @@ export default function ProductsPage() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-12">
       <h1 className="text-3xl font-bold">Products</h1>
-      {pendingId && <a className="mt-4 block underline" href={`/checkout/return?reservation_id=${pendingId}`}>Check pending payment</a>}
+      {pendingId && <a className="mt-4 block underline" href={`/checkout/return?reservation_id=${pendingId}`}>View earlier payment attempt</a>}
       <div className="mt-6 flex items-end justify-between gap-4">
         <div>
           <label htmlFor="category-filter" className="block text-sm text-slate-700 dark:text-slate-300">Category</label>

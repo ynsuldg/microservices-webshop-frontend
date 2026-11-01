@@ -3,7 +3,7 @@ import { http, HttpResponse } from "msw";
 import { RouterContextProvider } from "react-router";
 import { tokenContext } from "~/context/context";
 import { action } from "~/routes/productsPage";
-import { loader } from "~/routes/checkoutReturnPage";
+import { action as cancelAction, loader } from "~/routes/checkoutReturnPage";
 import { server } from "./mocks/server";
 import { apiBaseUrl } from "./mocks/handlers";
 
@@ -26,6 +26,40 @@ function checkoutRequest() {
 }
 
 describe("Payment route integration", () => {
+  it("cancels through an authenticated POST without trusting customer identity from the form", async () => {
+    sessionStorage.setItem("cart", "saved products");
+    sessionStorage.setItem("checkoutAttempt", JSON.stringify({ id, cart: "saved fingerprint" }));
+    server.use(http.post(`${apiBaseUrl}/checkouts/${id}/cancel`, async ({ request }) => {
+      expect(request.headers.get("Authorization")).toBe("Bearer customer-token");
+      expect(await request.text()).toBe("");
+      return HttpResponse.json({ orderId: 1, status: "CANCELLED" });
+    }));
+    const url = new URL(`http://localhost/checkout/return?reservation_id=${id}`);
+    const result = await cancelAction({
+      request: new Request(url, { method: "POST", body: new URLSearchParams({ intent: "cancel", customerName: "untrusted" }) }),
+      context: context(), params: {}, url, pattern: "/checkout/return",
+    });
+    expect(result).toBeInstanceOf(Response);
+    expect((result as Response).status).toBe(303);
+    expect((result as Response).headers.get("Location")).toBe(`/checkout/return?reservation_id=${id}`);
+    expect(sessionStorage.getItem("cart")).toBe("saved products");
+    expect(sessionStorage.getItem("checkoutAttempt")).not.toBeNull();
+  });
+
+  it("preserves cart and pending attempt when cancellation fails", async () => {
+    sessionStorage.setItem("cart", "saved products");
+    sessionStorage.setItem("checkoutAttempt", JSON.stringify({ id, cart: "saved fingerprint" }));
+    server.use(http.post(`${apiBaseUrl}/checkouts/${id}/cancel`, () => new HttpResponse(null, { status: 502 })));
+    const url = new URL(`http://localhost/checkout/return?reservation_id=${id}`);
+    const result = await cancelAction({
+      request: new Request(url, { method: "POST", body: new URLSearchParams({ intent: "cancel" }) }),
+      context: context(), params: {}, url, pattern: "/checkout/return",
+    });
+    expect(result).toMatchObject({ error: expect.stringContaining("Unable to cancel") });
+    expect(sessionStorage.getItem("cart")).toBe("saved products");
+    expect(sessionStorage.getItem("checkoutAttempt")).not.toBeNull();
+  });
+
   it("opens Stripe through the gateway with the authenticated token", async () => {
     server.use(http.post(`${apiBaseUrl}/checkouts/${id}`, async ({ request }) => {
       expect(request.headers.get("Authorization")).toBe("Bearer customer-token");
