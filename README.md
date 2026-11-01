@@ -2,7 +2,7 @@
 
 ## Ansvar
 
-Frontend låter användare logga in, söka och filtrera produkter, hantera kundvagnen och starta Stripe Checkout.
+Frontend låter användare hantera sitt konto, söka och filtrera produkter, hantera kundvagnen och starta Stripe Checkout.
 Administratörer kan även skapa produkter. Alla backendanrop går via gatewayn.
 
 Betalningssidan visar backendens orderstatus och låter kunden uppdatera eller avbryta ett betalningsförsök.
@@ -10,6 +10,18 @@ Att lämna Stripe eller ändra kundvagnen avbryter inte en tidigare betalningsse
 Kundvagnen behålls vid avbrott och töms efter PAID endast om den motsvarar den betalade ordern.
 Pending-länken sparas per webbläsarflik och följer inte med till en annan dator.
 En saknad order kan rensas ur lokala referenser utan att kundvagnen tas bort.
+
+## Kontohantering
+
+- **Create account** under Login öppnar registrering med e-postadress och bekräftat lösenord. Nya konton får rollen USER och skickas tillbaka till login.
+- **Forgot password?** växlar samma loginvy till återställning med e-postadress och bekräftat nytt lösenord. Efter återställning visas en bekräftelse på loginvyn.
+- **Delete account** finns nere till höger i välkomstkortet. Nuvarande lösenord krävs. Efter bekräftad radering avslutas den aktuella frontend-sessionen.
+
+Nya lösenord kräver minst åtta tecken och högst 72 UTF-8-byte. Fel visas i formuläret.
+Kontofunktionerna kräver att både gateway och auth-service körs.
+
+Lösenordsåterställningen är en demofunktion utan mejl, återställningskod eller ägarverifiering.
+Den ska endast användas med testkonton.
 
 ## Tekniker
 
