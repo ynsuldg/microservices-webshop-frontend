@@ -41,3 +41,8 @@ export function pendingCheckoutId(): string | undefined {
   const saved = sessionStorage.getItem(key);
   return saved ? (JSON.parse(saved) as Attempt).id : undefined;
 }
+
+// Tar endast bort den saknade betalningsreferensen och lämnar varukorgen orörd.
+export function discardMissingCheckout(id: string): void {
+  if (pendingCheckoutId() === id) sessionStorage.removeItem(key);
+}

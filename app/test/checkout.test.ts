@@ -1,11 +1,21 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { checkoutAttempt, finishCheckout } from "~/utils/checkout";
+import { checkoutAttempt, discardMissingCheckout, finishCheckout, pendingCheckoutId } from "~/utils/checkout";
 import type { CartItemType } from "~/types/CartItemType";
 
 const cart = [{ id: 42, quantity: 2 }] as CartItemType[];
 afterEach(() => sessionStorage.clear());
 
 describe("Checkout attempts", () => {
+  it("discards only the matching missing reference and preserves the cart", () => {
+    const savedCart = JSON.stringify(cart);
+    sessionStorage.setItem("cart", savedCart);
+    const attempt = checkoutAttempt(cart);
+    discardMissingCheckout("another-reservation");
+    expect(pendingCheckoutId()).toBe(attempt.id);
+    discardMissingCheckout(attempt.id);
+    expect(pendingCheckoutId()).toBeUndefined();
+    expect(sessionStorage.getItem("cart")).toBe(savedCart);
+  });
   it("reuses the same reservation after a lost response", () => {
     expect(checkoutAttempt(cart).id).toBe(checkoutAttempt(cart).id);
   });
