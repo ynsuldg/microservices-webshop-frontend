@@ -3,6 +3,13 @@ import type { OrderRequestDTO } from "~/types/Order";
 export type CheckoutStatus = { orderId: number; status: string };
 const gateway = import.meta.env.VITE_GATEWAY_URL;
 
+export class PaymentRequestError extends Error {
+  // Bevarar HTTP-status så att saknad order kan skiljas från nätverks- och serverfel.
+  constructor(public readonly status: number, message: string) {
+    super(message);
+  }
+}
+
 // Anropar gatewayn med kundens befintliga sessionstoken utan interna serverhemligheter.
 async function paymentRequest(id: string, accessToken: string, order?: OrderRequestDTO) {
   if (!gateway) throw new Error("Payment service is not configured.");
@@ -12,7 +19,7 @@ async function paymentRequest(id: string, accessToken: string, order?: OrderRequ
     ...(order ? { body: JSON.stringify(order) } : {}),
   });
   if (!response.ok) {
-    throw new Error(response.status === 401 ? "Your session has expired. Please log in again."
+    throw new PaymentRequestError(response.status, response.status === 401 ? "Your session has expired. Please log in again."
       : "Unable to complete the payment request. Please try again.");
   }
   return response.json();

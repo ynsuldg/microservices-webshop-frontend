@@ -59,6 +59,20 @@ describe("Payment route integration", () => {
       url: new URL(`http://localhost/checkout/return?reservation_id=${id}&result=success`),
       pattern: "/checkout/return",
     });
-    expect(result.payment.status).toBe("PENDING_PAYMENT");
+    expect(result.payment?.status).toBe("PENDING_PAYMENT");
+  });
+
+  it.each([404, 403, 502])("handles payment status HTTP %s without clearing local state", async (status) => {
+    sessionStorage.setItem("cart", "saved products");
+    sessionStorage.setItem("checkoutAttempt", JSON.stringify({ id, cart: "saved fingerprint" }));
+    server.use(http.get(`${apiBaseUrl}/checkouts/${id}`, () => new HttpResponse(null, { status })));
+    const result = await loader({
+      request: new Request(`http://localhost/checkout/return?reservation_id=${id}`),
+      context: context(), params: {},
+      url: new URL(`http://localhost/checkout/return?reservation_id=${id}`), pattern: "/checkout/return",
+    });
+    expect(result).toMatchObject({ payment: null, missing: status === 404 });
+    expect(sessionStorage.getItem("cart")).toBe("saved products");
+    expect(sessionStorage.getItem("checkoutAttempt")).not.toBeNull();
   });
 });
