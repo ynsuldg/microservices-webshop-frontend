@@ -12,7 +12,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 // Anger registreringssidans titel.
 export function meta() {
-  return [{ title: "Create account - Blackmarqet" }];
+  return [{ title: "Create account - Demo Webshop" }];
 }
 
 // Validerar formuläret på servern och registrerar kontot genom gatewayn.
@@ -40,7 +40,7 @@ export default function RegisterPage({ actionData }: Route.ComponentProps) {
   return (
     <main className="flex items-center justify-center">
       <div className="w-full max-w-sm">
-        <p className="text-center text-xs tracking-[0.25em] text-slate-500 dark:text-slate-400">BLACKMARQET</p>
+        <p className="text-center text-xs tracking-[0.25em] text-slate-500 dark:text-slate-400">Demo Webshop</p>
         <h1 className="mt-3 text-center text-2xl font-medium">Create account</h1>
         {actionData?.error && <p role="alert" className="mt-6 text-center text-sm text-red-600 dark:text-red-300">{actionData.error}</p>}
         <Form method="post" className="mt-10 space-y-6">

@@ -7,7 +7,7 @@ export const CookieBanner = ({ onDismiss }: CookieBannerProps) => {
         <div className="px-4 py-3 fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white dark:border-[#9c9177]/20 dark:bg-slate-900">
             <div className="mx-auto flex max-w-6xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-sm">
-                    Blackmarqet använder en nödvändig cookie (HttpOnly) för att hålla
+                    Demo Webshop använder en nödvändig cookie (HttpOnly) för att hålla
                     dig inloggad och ge säker åtkomst till ditt konto. Cookien krävs
                     för att tjänsten ska fungera och är inget du behöver godkänna.
                 </p>

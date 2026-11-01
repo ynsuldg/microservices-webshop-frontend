@@ -4,8 +4,8 @@ import { getSession } from "~/sessions.server";
 
 export function meta({ }: Route.MetaArgs) {
   return [
-    { title: "BlackMarqet" },
-    { name: "description", content: "Welcome to BlackMarqet!" },
+    { title: "Demo Webshop" },
+    { name: "description", content: "Welcome to Demo Webshop!" },
   ];
 }
 
@@ -23,7 +23,7 @@ export default function Home() {
     <main className="px-6 flex items-center justify-center overflow-hidden">
       <div className="text-center">
         <p className="text-xs tracking-[0.25em] text-slate-500 dark:text-slate-400">
-          BLACKMARQET
+          Demo Webshop
         </p>
         <h1 className="mt-4 text-3xl font-medium">
           Not everything is for sale.
