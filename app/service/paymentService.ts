@@ -11,10 +11,10 @@ export class PaymentRequestError extends Error {
 }
 
 // Anropar gatewayn med kundens befintliga sessionstoken utan interna serverhemligheter.
-async function paymentRequest(id: string, accessToken: string, order?: OrderRequestDTO) {
+async function paymentRequest(id: string, accessToken: string, order?: OrderRequestDTO, cancel = false) {
   if (!gateway) throw new Error("Payment service is not configured.");
-  const response = await fetch(`${gateway.replace(/\/$/, "")}/checkouts/${encodeURIComponent(id)}`, {
-    method: order ? "POST" : "GET",
+  const response = await fetch(`${gateway.replace(/\/$/, "")}/checkouts/${encodeURIComponent(id)}${cancel ? "/cancel" : ""}`, {
+    method: order || cancel ? "POST" : "GET",
     headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
     ...(order ? { body: JSON.stringify(order) } : {}),
   });
@@ -38,4 +38,9 @@ export async function createCheckout(id: string, token: string, order: OrderRequ
 // Hämtar betalningsstatus som backend har bekräftat.
 export async function getCheckoutStatus(id: string, token: string): Promise<CheckoutStatus> {
   return paymentRequest(id, token);
+}
+
+// Ber backend stänga betalningsförsöket hos Stripe innan order och lagerreservation ändras.
+export async function cancelCheckout(id: string, token: string): Promise<CheckoutStatus> {
+  return paymentRequest(id, token, undefined, true);
 }
