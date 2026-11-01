@@ -8,8 +8,8 @@ type ProductProps = {
 
 const ProductCard = ({ product, onAdd }: ProductProps) => {
   return (
-    <article className="p-3 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
-      <Link to={`/products/${product.id}`}>
+    <article className="flex h-full flex-col p-3 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+      <Link to={`/products/${product.id}`} className="flex flex-1 flex-col">
         {product.imageUrl ? (
           <img
             src={product.imageUrl}
@@ -23,7 +23,7 @@ const ProductCard = ({ product, onAdd }: ProductProps) => {
           </div>
         )}
 
-        <div className="mt-4 mb-4">
+        <div className="mt-4 mb-4 flex flex-1 flex-col">
           <span className="w-fit px-3 py-1 rounded-full text-xs font-medium text-slate-700 bg-slate-100 dark:bg-slate-800 dark:text-slate-300">
             {product.category}
           </span>
@@ -36,7 +36,7 @@ const ProductCard = ({ product, onAdd }: ProductProps) => {
             {product.description}
           </p>
 
-          <div className="mt-4 flex items-baseline justify-between">
+          <div className="mt-auto flex items-baseline justify-between pt-4">
             <span className="text-lg font-semibold text-slate-900 dark:text-slate-100">
               {product.price.toLocaleString("en-US", {
                 style: "currency",
