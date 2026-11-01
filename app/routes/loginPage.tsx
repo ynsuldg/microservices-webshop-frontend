@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, useNavigation } from "react-router";
+import { Form, Link, useNavigation, useSearchParams } from "react-router";
 import { login } from "~/service/authService";
 
 import { redirect } from "react-router";
@@ -50,6 +50,7 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function LoginPage({ actionData }: Route.ComponentProps) {
 	const error = actionData?.error;
+	const [searchParams] = useSearchParams();
 	const navigation = useNavigation();
 	const isSubmitting = navigation.state === "submitting";
 
@@ -61,6 +62,10 @@ export default function LoginPage({ actionData }: Route.ComponentProps) {
 			<div className="w-full max-w-sm">
 				<p className="text-center text-xs tracking-[0.25em] text-slate-500 dark:text-slate-400">BLACKMARQET</p>
 				<h1 className="mt-3 text-center text-2xl font-medium">State your business</h1>
+
+				{searchParams.get("registered") === "1" && (
+					<p role="status" className="mt-6 text-center text-sm text-green-600 dark:text-green-300">Account created. You can now log in.</p>
+				)}
 
 				{error ? (
 					<div className="w-fit mx-auto mt-6 px-4 py-2 rounded-md border-2 border-red-300 bg-red-100 dark:border-red-900 dark:bg-red-300/30">
@@ -99,6 +104,7 @@ export default function LoginPage({ actionData }: Route.ComponentProps) {
 						{isSubmitting ? "Logging in..." : "Login"}
 					</button>
 				</Form>
+				<Link to="/register" className="mt-4 block w-full rounded-sm border-2 border-slate-400 px-6 py-3 text-center text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100">Create account</Link>
 			</div>
 		</main>
 	);
